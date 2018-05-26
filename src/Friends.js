@@ -12,17 +12,18 @@ class Friends extends Component {
   }
 
   componentDidMount() {
-    return fetch('https://reactnativecode.000webhostapp.com/FruitsList.php')
+    return fetch('http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/list')
       .then((response) => response.json())
       .then((responseJson) => {
         let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
           isLoading: false,
-          dataSource: ds.cloneWithRows(responseJson),
+          dataSource: ds.cloneWithRows(responseJson.results.users),
         }, function() {
           // In this block you can do something with new state.
-          this.arrayholder = responseJson;
-
+          this.arrayholder = responseJson.results.users;
+          console.log("Add json");
+          console.log(responseJson.results.users)
         });
       })
       .catch((error) => {
@@ -31,13 +32,15 @@ class Friends extends Component {
 
   }
 
-  GetListViewItem (fruit_name) {
-   Alert.alert(fruit_name);
+  GetListViewItem (username) {
+   Alert.alert(username);
   }
 
    SearchFilterFunction(text){
+     console.log("IN search function");
+     console.log(text);
      const newData = this.arrayholder.filter(function(item){
-         const itemData = item.fruit_name.toUpperCase()
+         const itemData = item.username.toUpperCase()
          const textData = text.toUpperCase()
          return itemData.indexOf(textData) > -1
      })
@@ -82,7 +85,7 @@ class Friends extends Component {
           dataSource={this.state.dataSource}
           renderSeparator= {this.ListViewItemSeparator}
           renderRow={(rowData) => <Text style={styles.rowViewContainer}
-          onPress={this.GetListViewItem.bind(this, rowData.fruit_name)} >{rowData.fruit_name}</Text>}
+          onPress={this.GetListViewItem.bind(this, rowData.username)} >{rowData.username}</Text>}
           enableEmptySections={true}
           style={{marginTop: 10}}
         />
