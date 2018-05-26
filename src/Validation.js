@@ -6,6 +6,14 @@ import { withNavigation } from 'react-navigation';
 class Validation extends React.Component {
   state = { username: '', authCode: '' };
 
+  componentWillMount()
+  {
+    const { navigation } = this.props;
+    const userId = navigation.getParam('userId', 'NO_ID');
+    console.log(userId);
+    this.setState({ username: userId });
+  }
+
   onLoginFail() {
       console.log("fail");
       console.log(this.response);
@@ -15,12 +23,10 @@ class Validation extends React.Component {
       });
   }
 
-
   onButtonPress() {
       const { userId, authCode } = this.state;
       const { navigation } = this.props;
 
-      this.setState({ error: '', loading: true });
       let bodyFormData = new FormData();
 
       bodyFormData.append('username', username);
@@ -46,10 +52,6 @@ class Validation extends React.Component {
 
 
     render() {
-        const { navigation } = this.props;
-        const userId = navigation.getParam('userId', 'NO_ID');
-
-        console.log(userId);
         return (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Verify code</Text>

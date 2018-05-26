@@ -8,7 +8,7 @@ class Registration extends Component {
     state = { username: '', password: '', email: '', phonenumber: '', error: '', loading: null };
 
 
-    onButtonPress() {       
+    onButtonPress() {
         const { username, password, email, phonenumber } = this.state;
         const { navigation } = this.props;
 
@@ -19,9 +19,9 @@ class Registration extends Component {
         bodyFormData.append('password', password);
         bodyFormData.append('email', email);
         bodyFormData.append('number', phonenumber);
-        
+
         console.log(bodyFormData);
-        
+
         axios({
             method: 'post',
             url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/add',
@@ -39,8 +39,8 @@ class Registration extends Component {
     }
 
 
-    onLoginFail() {        
-        this.setState({ 
+    onLoginFail() {
+        this.setState({
             loading: false,
             error: 'Registration Failed!'
         });
@@ -48,7 +48,7 @@ class Registration extends Component {
 
 
     onLoginSuccess() {
-        this.setState({ 
+        this.setState({
             username: '',
             password: '',
             email: '',
@@ -68,7 +68,7 @@ class Registration extends Component {
     }
 
     render() {
-        return ( 
+        return (
             <View>
                 <Card>
                     <CardSection>
@@ -82,11 +82,10 @@ class Registration extends Component {
 
                     <CardSection>
                         <Input
-                            secureTextEntry
                             placeholder="email"
                             label="Email"
                             value={this.state.email}
-                            onChangeText={email => this.setState({ email })}                       
+                            onChangeText={email => this.setState({ email })}
                         />
                     </CardSection>
 
@@ -96,17 +95,16 @@ class Registration extends Component {
                             placeholder="password"
                             label="Password"
                             value={this.state.password}
-                            onChangeText={password => this.setState({ password })}                       
+                            onChangeText={password => this.setState({ password })}
                         />
                     </CardSection>
 
                     <CardSection>
                         <Input
-                            secureTextEntry
                             placeholder="number"
                             label="Phone"
                             value={this.state.phonenumber}
-                            onChangeText={phonenumber => this.setState({ phonenumber })}                       
+                            onChangeText={phonenumber => this.setState({ phonenumber })}
                         />
                     </CardSection>
 
