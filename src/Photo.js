@@ -20,27 +20,26 @@ class Photo extends React.Component {
 
   componentWillMount()
   {
-    console.log("Photostart");
-
-    const { navigation } = this.props;
-    //const userId = navigation.getParam('userId', 'NO_ID');
-    try {
-      const value = AsyncStorage.getItem('@User:key');
-      if (value !== null){
-        console.log("User retrieved from storage");
-        console.log(value);
-        this.setState({ username: value });
-      }
-    } catch (error) {
-      // Error retrieving data
-    }
-    console.log(navigation.state);
-
+    this._bootstrapAsync();
     //this.setState({ username: userId });
   }
 
-    render() {
-      const { username} = this.state;
+  _bootstrapAsync = async () => {
+    console.log("Photostart");
+
+    const userToken = await AsyncStorage.getItem('@User:key');
+
+    this.setState({ username: userToken });
+ };
+
+ onLoginFail() {
+     console.log("upload failed");
+     console.log(this.response);
+ }
+
+
+  render() {
+      const { username } = this.state;
 
       console.log("Rendering photo");
       console.log(username);
@@ -64,17 +63,21 @@ class Photo extends React.Component {
 
                                 // You can also display the image using data:
                                 // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
                                 let bodyFormData = new FormData();
 
                                 bodyFormData.append('username', username);
-                                bodyFormData.append('file', source);
+                                bodyFormData.append('file',
+                                {
+                                  uri: response.uri,
+                                  name: response.fileName
+                                });
 
                                 console.log(bodyFormData);
+                                console.log(response);
 
                                 axios({
                                     method: 'post',
-                                    url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/add',
+                                    url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/image/add',
                                     data: bodyFormData,
                                     config: { headers: {'Content-Type': 'multipart/form-data' }}
                                 })
