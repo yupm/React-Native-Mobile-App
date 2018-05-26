@@ -8,13 +8,14 @@ const Input = ({ label, value, onChangeText, placeholder, secureTextEntry }) => 
     return(
         <View style={containerStyle}>
             <Text  style={labelStyle}>{ label }</Text>
-            <TextInput 
+            <TextInput
                 secureTextEntry={secureTextEntry}
                 placeholder={placeholder}
                 style={inputStyle}
                 value={value}
                 onChangeText={onChangeText}
-                underlineColorAndroid={'transparent'} 
+                underlineColorAndroid={'transparent'}
+                autoCapitalize = 'none'
                 autoCorrect={false}
             />
         </View>
@@ -32,7 +33,7 @@ const styles={
     },
     labelStyle: {
         fontSize: 18,
-        paddingLeft: 0, 
+        paddingLeft: 0,
         flex: 1
     },
     containerStyle: {

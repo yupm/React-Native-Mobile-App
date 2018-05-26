@@ -3,14 +3,29 @@ import { Button, Text, View, YellowBox } from 'react-native';
 import { NewsFeed } from './src/NewsFeed';
 import { Login } from './src/Login';
 import { Dash } from './src/Dash';
+import { Registration } from './src/Registration';
 import { Friends } from './src/Friends';
+import { Validation } from './src/Validation';
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation'; // Version can be specified in package.json
+
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 //import { Ionicons } from '@expo/vector-icons'; // Version can be specified in package.json
+var ImagePicker = require('react-native-image-picker');
+var options = {
+  title: 'Select Avatar',
+  customButtons: [
+    {name: 'fb', title: 'Choose Photo from Facebook'},
+  ],
+  storageOptions: {
+    skipBackup: true,
+    path: 'images'
+  }
+};
 
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
+    headerTitleStyle: { alignSelf: 'center' },
     title: 'Login',
   };
     render() {
@@ -21,14 +36,22 @@ class LoginScreen extends React.Component {
 }
 
 class SignUpScreen extends React.Component {
+  static navigationOptions = {
+    headerTitleStyle: { alignSelf: 'center' },
+    title: 'Sign up!',
+  };
   render() {
     return (
-      <SignUpScreen navigation={this.props.navigation} />
+      <Registration navigation={this.props.navigation} />
     );
   }
 }
 
 class ValidationScreen extends React.Component {
+  static navigationOptions = {
+    headerTitleStyle: { alignSelf: 'center' },
+    title: 'Confirmation Code',
+  };
   render() {
     return (
       <Validation navigation={this.props.navigation} />
@@ -72,37 +95,40 @@ class SearchScreen extends React.Component {
 
 
 class PhotoScreen extends React.Component {
-
-    uploadImage(){
-        const data = new FormData();
-        data.append('name', 'testName'); // you can append anyone.
-        data.append('photo', {
-          uri: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/image/add',
-          type: 'image/jpeg', // or photo.type
-          name: 'testPhotoName'
-        });
-        fetch(url, {
-          method: 'post',
-          body: data
-        }).then(res => {
-          console.log(res)
-        });
-        
-    }
-
-
     render() {
         return (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Button
-            onPress={() => this.uploadImage()}
+            onPress={() =>    ImagePicker.launchImageLibrary(options, (response) => {
+                                console.log('Response = ', response);
+                                if (response.didCancel) {
+                                  console.log('User cancelled image picker');
+                                }
+                                else if (response.error) {
+                                  console.log('ImagePicker Error: ', response.error);
+                                }
+                                else if (response.customButton) {
+                                  console.log('User tapped custom button: ', response.customButton);
+                                }
+                                else {
+                                  let source = { uri: response.uri };
+
+                                  // You can also display the image using data:
+                                  // let source = { uri: 'data:image/jpeg;base64,' + response.data };
+
+                                  this.setState({
+                                    avatarSource: source
+                                  });
+                                }
+                              })
+                      }
             title="Upload!"
-            />         
+            />
          </View>
         );
       }
 }
-  
+
 class DashScreen extends React.Component {
     render() {
         return (
@@ -113,11 +139,10 @@ class DashScreen extends React.Component {
       }
 }
 
-
 const AuthStack = createStackNavigator({
   Login: { screen: LoginScreen },
-  Register: { screen: SignUpScreen },
   Validate: { screen: ValidationScreen },
+  Register: { screen: SignUpScreen },
   Access: { screen: AuthSpinnerScreen },
 });
 
@@ -125,7 +150,7 @@ const AuthStack = createStackNavigator({
 const MainNavigator = createBottomTabNavigator({
   Home: { screen: NewsFeedScreen },
   Search: { screen: SearchScreen },
-  Upload: { screen: PhotoScreen },  
+  Upload: { screen: PhotoScreen },
   Dashboard: { screen: DashScreen },
 });
 
@@ -134,6 +159,7 @@ const SwitchNavigator = createSwitchNavigator({
   SignIn: AuthStack,
   Main: MainNavigator,
 });
+
 
 export default class Main extends React.Component {
   render() {

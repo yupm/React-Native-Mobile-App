@@ -2,26 +2,45 @@ import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { withNavigation } from 'react-navigation';
+import axios from 'axios';
 
 class LoginForm extends Component {
-    state = { email: '', password: '', error: '', loading: false };
+    state = { username: '', password: '', error: '', loading: null };
 
 
     onButtonPress() {
-        const { email, password } = this.state;
+        const { username, password } = this.state;
+        const { navigation } = this.props;
 
         this.setState({ error: '', loading: true });
-        // firebase.auth().signInWithEmailAndPassword(email, password)
-        //     .then(this.onLoginSuccess.bind(this))
-        //     .catch(() => {
-        //         firebase.auth().createUserWithEmailAndPassword(email, password)
-        //             .then(this.onLoginSuccess.bind(this))
-        //             .catch(this.onLoginFail.bind(this));
-        //     });
+        let bodyFormData = new FormData();
+
+        bodyFormData.append('username', username);
+        bodyFormData.append('password', password);
+        console.log(bodyFormData);
+
+        axios({
+            method: 'post',
+            url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/login',
+            data: bodyFormData,
+            config: { headers: {'Content-Type': 'multipart/form-data' }}
+        })
+        .then(function (response) {
+            //handle success
+            console.log("yay");
+            console.log(response.data.results.token);
+            console.log(response);
+            navigation.navigate('Home', { jwtToken: response.data.results.token });
+
+        })
+        .catch(this.onLoginFail.bind(this));
     }
 
+
     onLoginFail() {
-        this.setState({ 
+        console.log("fail");
+        console.log(this.response);
+        this.setState({
             loading: false,
             error: 'Authentication Failed'
         });
@@ -29,8 +48,8 @@ class LoginForm extends Component {
 
 
     onLoginSuccess() {
-        this.setState({ 
-            email: '',
+        this.setState({
+            username: '',
             password: '',
             loading: false,
             error: ''
@@ -43,7 +62,7 @@ class LoginForm extends Component {
             return <Spinner size="small" />;
         }
         return (
-            <Button  onPress={() => { this.props.navigation.navigate('Home')}}>
+            <Button onPress={this.onButtonPress.bind(this)}>
             Login
             </Button>
         );
@@ -51,25 +70,22 @@ class LoginForm extends Component {
 
     renderSignUpButton()
     {
-        if (this.state.loading){
-            return <Spinner size="small" />;
-        }
         return (
-            <Button  onPress={() => { this.props.navigation.navigate('Home')}}>
+            <Button  onPress={() => { this.props.navigation.navigate('Register')}}>
             Sign up
             </Button>
         );
     }
 
     render() {
-        return ( 
+        return (
             <Card>
                 <CardSection>
                     <Input
-                        placeholder="user@gmail.com"
-                        label="Email"
-                        value={this.state.email}
-                        onChangeText={email => this.setState({ email })}
+                        placeholder="user"
+                        label="UserId"
+                        value={this.state.username}
+                        onChangeText={username => this.setState({ username })}
                     />
                 </CardSection>
 
@@ -79,7 +95,7 @@ class LoginForm extends Component {
                         placeholder="password"
                         label="Password"
                         value={this.state.password}
-                        onChangeText={password => this.setState({ password })}                       
+                        onChangeText={password => this.setState({ password })}
                     />
 
                 </CardSection>
