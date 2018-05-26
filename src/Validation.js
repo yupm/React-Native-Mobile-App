@@ -2,16 +2,21 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { Button, Input, CardSection } from './components/common';
 import { withNavigation } from 'react-navigation';
+import axios from 'axios';
 
 class Validation extends React.Component {
-  state = { username: '', authCode: '' };
+  state = { username: '', authCode: '', password: '' };
 
   componentWillMount()
   {
     const { navigation } = this.props;
     const userId = navigation.getParam('userId', 'NO_ID');
+    const pass = navigation.getParam('pass', 'NO_PW');
+
     console.log(userId);
     this.setState({ username: userId });
+    this.setState({ password: pass });
+
   }
 
   onLoginFail() {
@@ -24,7 +29,7 @@ class Validation extends React.Component {
   }
 
   onButtonPress() {
-      const { userId, authCode } = this.state;
+      const { username, authCode, password } = this.state;
       const { navigation } = this.props;
 
       let bodyFormData = new FormData();
@@ -44,8 +49,28 @@ class Validation extends React.Component {
           //handle success
           console.log("verified");
           console.log(response);
-          navigation.navigate('Login');
 
+          let bodyFormData = new FormData();
+
+          bodyFormData.append('username', username);
+          bodyFormData.append('password', password);
+          console.log(bodyFormData);
+
+          axios({
+              method: 'post',
+              url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/login',
+              data: bodyFormData,
+              config: { headers: {'Content-Type': 'multipart/form-data' }}
+          })
+          .then(function (response) {
+              //handle success
+              console.log("yay");
+              console.log(response.data.results.token);
+              console.log(response);
+              navigation.navigate('Home', { jwtToken: response.data.results.token });
+
+          })
+          .catch(this.onLoginFail.bind(this));
       })
       .catch(this.onLoginFail.bind(this));
   }

@@ -6,21 +6,11 @@ import { Dash } from './src/Dash';
 import { Registration } from './src/Registration';
 import { Friends } from './src/Friends';
 import { Validation } from './src/Validation';
+import { Photo } from './src/Photo';
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation'; // Version can be specified in package.json
 
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 //import { Ionicons } from '@expo/vector-icons'; // Version can be specified in package.json
-var ImagePicker = require('react-native-image-picker');
-var options = {
-  title: 'Select Avatar',
-  customButtons: [
-    {name: 'fb', title: 'Choose Photo from Facebook'},
-  ],
-  storageOptions: {
-    skipBackup: true,
-    path: 'images'
-  }
-};
 
 
 class LoginScreen extends React.Component {
@@ -97,34 +87,7 @@ class SearchScreen extends React.Component {
 class PhotoScreen extends React.Component {
     render() {
         return (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Button
-            onPress={() =>    ImagePicker.launchImageLibrary(options, (response) => {
-                                console.log('Response = ', response);
-                                if (response.didCancel) {
-                                  console.log('User cancelled image picker');
-                                }
-                                else if (response.error) {
-                                  console.log('ImagePicker Error: ', response.error);
-                                }
-                                else if (response.customButton) {
-                                  console.log('User tapped custom button: ', response.customButton);
-                                }
-                                else {
-                                  let source = { uri: response.uri };
-
-                                  // You can also display the image using data:
-                                  // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-                                  this.setState({
-                                    avatarSource: source
-                                  });
-                                }
-                              })
-                      }
-            title="Upload!"
-            />
-         </View>
+          <Photo navigation={this.props.navigation} />
         );
       }
 }

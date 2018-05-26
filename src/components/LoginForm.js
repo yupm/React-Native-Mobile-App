@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View , AsyncStorage } from 'react-native';
 import { Button, Card, CardSection, Input, Spinner } from './common';
 import { withNavigation } from 'react-navigation';
 import axios from 'axios';
@@ -31,6 +31,16 @@ class LoginForm extends Component {
             console.log(response.data.results.token);
             console.log(response);
             navigation.navigate('Home', { jwtToken: response.data.results.token });
+
+            try {
+                 AsyncStorage.setItem('@User:key', username);
+                 AsyncStorage.setItem('@Token:key', response.data.results.token);
+            } catch (error) {
+              // Error saving data
+              console.log("Error saving key");
+              console.log(error);
+            }
+
 
         })
         .catch(this.onLoginFail.bind(this));
