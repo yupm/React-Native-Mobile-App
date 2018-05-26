@@ -6,34 +6,34 @@ import Button from './Button';
 
 const AlbumDetail = ({ record }) => {
     const { title, artist, thumbnail_image, image, url } = record;
-    const { thumbnailStyle, 
-        headerContentStyle, 
-        thumbnailContainerStyle, 
-        headerTextStyle, 
+    const { thumbnailStyle,
+        headerContentStyle,
+        thumbnailContainerStyle,
+        headerTextStyle,
         imageStyle } = styles;
 
     return (
         <Card>
             <CardSection>
                 <View style={thumbnailContainerStyle}>
-                    <Image 
-                        style={thumbnailStyle} 
-                        source={{ uri: thumbnail_image }} 
+                    <Image
+                        style={thumbnailStyle}
+                        source={{ uri: thumbnail_image }}
                     />
                 </View>
-                <View style={headerContentStyle}> 
+                <View style={headerContentStyle}>
                     <Text style={headerTextStyle}>{title}</Text>
                     <Text>{artist}</Text>
                 </View>
             </CardSection>
             <CardSection>
-                <Image 
+                <Image
                 style={imageStyle}
                 source={{ uri: image }} />
             </CardSection>
             <CardSection>
                 <Button onPress={()=> Linking.openURL(url)} >
-                    Buy Now
+                    Like
                 </Button>
             </CardSection>
         </Card>

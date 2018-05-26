@@ -21,7 +21,7 @@ class LoginForm extends Component {
 
         axios({
             method: 'post',
-            url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/login',
+            url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/sub/users/login',
             data: bodyFormData,
             config: { headers: {'Content-Type': 'multipart/form-data' }}
         })

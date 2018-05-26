@@ -24,7 +24,7 @@ class Registration extends Component {
 
         axios({
             method: 'post',
-            url: 'http://cloud3-env.pxrcc3jm2v.ap-southeast-1.elasticbeanstalk.com/users/add',
+            url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/sub/users/add',
             data: bodyFormData,
             config: { headers: {'Content-Type': 'multipart/form-data' }}
         })

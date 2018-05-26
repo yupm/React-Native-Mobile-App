@@ -66,19 +66,13 @@ class NewsFeedScreen extends React.Component {
 }
 
 class SearchScreen extends React.Component {
+  static navigationOptions = {
+    headerTitleStyle: { alignSelf: 'center' },
+    title: 'Search',
+  };
     render() {
       return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Settings!</Text>
-          <Button
-            title="Go to Home"
-            onPress={() => this.props.navigation.navigate('NewsFeed')}
-          />
-          <Button
-            title="Go to Details"
-            onPress={() => this.props.navigation.navigate('Details')}
-          />
-        </View>
+        <Friends navigation={this.props.navigation}/>
       );
     }
 }
@@ -112,8 +106,8 @@ const AuthStack = createStackNavigator({
 
 const MainNavigator = createBottomTabNavigator({
   Home: { screen: NewsFeedScreen },
-  Search: { screen: SearchScreen },
   Upload: { screen: PhotoScreen },
+  Search: { screen: SearchScreen },
   Dashboard: { screen: DashScreen },
 });
 
