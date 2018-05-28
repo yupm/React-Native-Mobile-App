@@ -5,11 +5,18 @@ import { withNavigation } from 'react-navigation';
 import axios from 'axios';
 
 class Registration extends Component {
-    state = { username: '', password: '', email: '', phonenumber: '', error: '', loading: null };
+        state = { username: '',
+                password: '',
+                email: '',
+                phonenumber: '',
+                gender: '',
+                dob: '',
+                error: '',
+                loading: null };
 
 
     onButtonPress() {
-        const { username, password, email, phonenumber } = this.state;
+        const { username, password, email, phonenumber, gender, dob } = this.state;
         const { navigation } = this.props;
 
         this.setState({ error: '', loading: true });
@@ -19,6 +26,8 @@ class Registration extends Component {
         bodyFormData.append('password', password);
         bodyFormData.append('email', email);
         bodyFormData.append('number', phonenumber);
+        bodyFormData.append('gender', gender);
+        bodyFormData.append('dob', dob);
 
         console.log(bodyFormData);
 
@@ -108,6 +117,23 @@ class Registration extends Component {
                         />
                     </CardSection>
 
+                    <CardSection>
+                        <Input
+                            placeholder="M/F"
+                            label="Gender"
+                            value={this.state.gender}
+                            onChangeText={gender => this.setState({ gender })}
+                        />
+                    </CardSection>
+
+                    <CardSection>
+                        <Input
+                            placeholder="DDMMYYYY"
+                            label="D.O.B"
+                            value={this.state.dob}
+                            onChangeText={dob => this.setState({ dob })}
+                        />
+                    </CardSection>
                     <Text style={styles.errorTextStyle}>
                         {this.state.error}
                     </Text>

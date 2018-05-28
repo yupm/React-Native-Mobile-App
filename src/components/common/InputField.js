@@ -4,8 +4,17 @@ import { TextInput, View } from 'react-native';
 const InputField = ({ value, onChangeText, placeholder, secureTextEntry }) => {
     const { inputStyle, containerStyle } = styles;
     return (
+        <View style={containerStyle}>
             <TextInput 
+                secureTextEntry={secureTextEntry}
+                placeholder={placeholder}
+                style={inputStyle}
+                value={value}
+                onChangeText={onChangeText}
+                underlineColorAndroid={'transparent'} 
+                autoCorrect={false}
             />
+        </View>
     );
 };
 

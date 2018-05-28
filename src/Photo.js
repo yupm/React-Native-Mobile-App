@@ -1,6 +1,8 @@
 import React from 'react';
 import { Text, View, Button, AsyncStorage } from 'react-native';
 import axios from 'axios';
+import { Spinner } from './components/common';
+
 import { withNavigation } from 'react-navigation';
 
 var ImagePicker = require('react-native-image-picker');
@@ -16,7 +18,7 @@ var options = {
 };
 
 class Photo extends React.Component {
-  state = { username: '' };
+  state = { username: '', uploaded: null };
 
   componentWillMount()
   {
@@ -32,17 +34,26 @@ class Photo extends React.Component {
     this.setState({ username: userToken });
  };
 
- onLoginFail() {
-     console.log("upload failed");
-     console.log(this.response);
- }
-
+  renderUploadStatus(){
+      switch(this.state.uploaded)
+      {
+          case true:
+              return(
+                <Text>Done!</Text>
+              );
+          case false:
+              return(
+                <Spinner size="large" />
+              );
+          default:
+          return(
+            <Text>Share it!</Text>
+          );
+      }
+  }
 
   render() {
-      const { username } = this.state;
-
-      console.log("Rendering photo");
-      console.log(username);
+      const { username, uploaded } = this.state;
 
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -72,6 +83,8 @@ class Photo extends React.Component {
                                   name: response.fileName
                                 });
 
+                                this.setState({ uploaded: false });
+
                                 console.log(bodyFormData);
                                 console.log(response);
 
@@ -81,25 +94,26 @@ class Photo extends React.Component {
                                     data: bodyFormData,
                                     config: { headers: {'Content-Type': 'multipart/form-data' }}
                                 })
-                                .then(function (response) {
+                                .then(() => {
                                     //handle success
                                     console.log("Uploaded");
                                     console.log(response);
-
+                                    this.setState({ uploaded: true });
                                 })
-                                .catch(this.onLoginFail.bind(this));
-
-                                this.setState({
-                                  avatarSource: source
+                                .catch((error) => {
+                                  console.error(error);
                                 });
+
                               }
                             })
                     }
           title="Upload!"
           />
+          {this.renderUploadStatus()}
        </View>
       );
     }
 }
+
 
 export { Photo };

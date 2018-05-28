@@ -8,8 +8,9 @@ import { Friends } from './src/Friends';
 import { Validation } from './src/Validation';
 import { Photo } from './src/Photo';
 import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation'; // Version can be specified in package.json
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
+YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader', 'Remote debugger']);
 //import { Ionicons } from '@expo/vector-icons'; // Version can be specified in package.json
 
 
@@ -89,9 +90,7 @@ class PhotoScreen extends React.Component {
 class DashScreen extends React.Component {
     render() {
         return (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Details!</Text>
-          </View>
+          <Dash navigation={this.props.navigation} />
         );
       }
 }
@@ -109,7 +108,33 @@ const MainNavigator = createBottomTabNavigator({
   Upload: { screen: PhotoScreen },
   Search: { screen: SearchScreen },
   Dashboard: { screen: DashScreen },
-});
+},
+{
+  navigationOptions: ({ navigation }) => ({
+    tabBarIcon: ({ focused, tintColor }) => {
+      const { routeName } = navigation.state;
+      let iconName;
+      if (routeName === 'Home') {
+        iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+      } else if (routeName === 'Upload') {
+        iconName = `ios-aperture${focused ? '' : '-outline'}`;
+      } else if (routeName === 'Search') {
+        iconName = `ios-search${focused ? '' : '-outline'}`;
+      }
+      else if (routeName === 'Dashboard') {
+        iconName = `ios-options${focused ? '' : '-outline'}`;
+      }
+      // You can return any component that you like here! We usually use an
+      // icon component from react-native-vector-icons
+      return <Ionicons name={iconName} size={25} color={tintColor} />;
+    },
+  }),
+  tabBarOptions: {
+    activeTintColor: 'navy',
+    inactiveTintColor: 'gray',
+  },
+}
+);
 
 
 const SwitchNavigator = createSwitchNavigator({
@@ -120,6 +145,7 @@ const SwitchNavigator = createSwitchNavigator({
 
 export default class Main extends React.Component {
   render() {
+    //return <SwitchNavigator />;
     return <SwitchNavigator />;
   }
 }

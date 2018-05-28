@@ -27,20 +27,22 @@ class LoginForm extends Component {
         })
         .then(function (response) {
             //handle success
-            console.log("yay");
+            console.log("Yes, Login info");
             console.log(response.data.results.token);
             console.log(response);
-            navigation.navigate('Home', { jwtToken: response.data.results.token });
 
             try {
                  AsyncStorage.setItem('@User:key', username);
                  AsyncStorage.setItem('@Token:key', response.data.results.token);
+                 //AsyncStorage.setItem('@IsAdmin:key', );
+                 
             } catch (error) {
               // Error saving data
               console.log("Error saving key");
               console.log(error);
             }
-
+            navigation.navigate('Home', { jwtToken: response.data.results.token });
+            
 
         })
         .catch(this.onLoginFail.bind(this));
