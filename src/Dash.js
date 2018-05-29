@@ -1,155 +1,200 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, ListView, TextInput, AsyncStorage, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, ListView, TextInput, AsyncStorage, ScrollView, Image } from 'react-native';
 import axios from 'axios';
 import { Button, Card, CardSection, Input, Spinner } from './components/common';
 import { withNavigation } from 'react-navigation';
-import { VictoryArea, VictoryAxis, VictoryZoomContainer, VictoryBrushContainer, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryStack, VictoryErrorBar, VictoryVoronoiTooltip, VictoryTooltip } from 'victory-native'; // 0.17.4
+import { VictoryArea, VictoryLabel, VictoryAxis, VictoryBar, VictoryZoomContainer, VictoryBrushContainer, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryStack, VictoryErrorBar, VictoryVoronoiTooltip, VictoryTooltip } from 'victory-native'; // 0.17.4
 
 
 class Dash extends Component {
+    state = { isAdmin: false };
+
     constructor() {
         super();
-        this.state = {
-          zoomDomain: { x: [new Date(1990, 1, 1), new Date(2009, 1, 1)] }
-        };
       }
 
-    handleZoom(domain) {
-    this.setState({ zoomDomain: domain });
-    }
-    
-  onLogOut()
-  {
-    console.log("Log out");
-    console.log(this.props);
-    const { navigation } = this.props;
-    
-    AsyncStorage.setItem('@User:key', '');
-    AsyncStorage.setItem('@Token:key', '');
+      _bootstrapAsync = async () => {
+        const userToken = await AsyncStorage.getItem('@User:key');
+        this.setState({ username: userToken });
+     };
 
-    navigation.navigate('SignIn');
-  }
+    componentWillMount() {
+        switch(this.state.isAdmin)
+        {
+            case true:
+              break;
+            case false:
+              break;
+            default:
+              break;
+        }
+    }
+
+
+  renderDashboardType(){
+    switch(this.state.isAdmin)
+    {
+        case true:
+            return(
+                <Card>
+                <CardSection>
+                    <View style={styles.headerContentStyle}>
+                        <Text style={styles.headerTextStyle}>Dashboard</Text>
+                    </View>
+                </CardSection>
+                <CardSection>
+                    <View style={styles.headerContentStyle}>
+                        <Text style={styles.header1TextStyle}>Total Number of Registered Users:</Text>
+                        <Text style={styles.header2TextStyle}>10000</Text>
+                    </View>
+                </CardSection>
+                <Text style={styles.header1TextStyle}>Signups:</Text>
+                <CardSection>
+                <VictoryChart>
+                  <VictoryStack>
+                    <VictoryArea
+                      data={[
+                        {x: 'a', y: 2}, {x: 'b', y: 3}, {x: 'c', y: 5}, {x: 'd', y: 4}, {x: 'e', y: 7}
+                      ]}
+                    />
+                  </VictoryStack>
+                </VictoryChart>
+                </CardSection>
+                  <Text style={styles.header1TextStyle}>Gender Ratio:</Text>
+                  <CardSection>
+                      <VictoryPie
+                      colorScale={["pink", "blue" ]}
+                      width={400} height={400}
+                      data={[
+                        { x: 'Male', y: 120 }, { x: 'Female', y: 150 }
+                      ]}
+                      style={{ labels: { fontSize: 20, fill: 'white' } }}
+                      />
+                </CardSection>
+
+                <Text style={styles.header1TextStyle}>Age:</Text>
+                <CardSection>
+                  <VictoryChart height={400} width={400}
+                  domainPadding={{ x: 50, y: [0, 20] }}
+                  scale={{ x: "time" }}
+                  >
+                  <VictoryBar
+                    style={styles.pieStyle}
+                    data={[
+                      { x: new Date(1986, 1, 1), y: 2 },
+                      { x: new Date(1996, 1, 1), y: 3 },
+                      { x: new Date(2006, 1, 1), y: 5 },
+                      { x: new Date(2016, 1, 1), y: 4 }
+                    ]}
+                  />
+                  </VictoryChart>
+                </CardSection>
+
+                <Text style={styles.header1TextStyle}>Top 10 Tags uploaded by users:</Text>
+                <CardSection>
+                <Text>Applee</Text>
+
+                </CardSection>
+
+                <CardSection>
+                  <Button onPress={this.onLogOut.bind(this)}>
+                      Log Out
+                  </Button>
+                </CardSection>
+                </Card>
+            );
+        case false:
+            return(
+              <Card style={styles.iosTopStyle}>
+                <CardSection>
+                  <View style={styles.containerStyle}>
+                      <View style={styles.inputStyle}>
+                        <Text  style={styles.header1TextStyle}>100</Text>
+                        <Text  style={styles.labelStyle}>Followers</Text>
+                      </View>
+                      <View style={styles.inputStyle}>
+                      <Text  style={styles.header1TextStyle}>8</Text>
+                      <Text  style={styles.labelStyle}>Ave. Likes/Photo </Text>
+                      </View>
+                  </View>
+
+                </CardSection>
+
+                <CardSection>
+                  <View>
+                      <Text style={styles.header2TextStyle}> List of recommended people to follow: </Text>
+                  </View>
+                </CardSection>
+
+
+                <CardSection>
+                  <Text style={styles.header1TextStyle}>One month ago: </Text>
+                  <Image></Image>
+                </CardSection>
+
+                <CardSection>
+                  <Text style={styles.header1TextStyle}>Last login: </Text>
+                </CardSection>
+
+                <CardSection>
+                  <Button onPress={this.onLogOut.bind(this)}>
+                      Log Out
+                  </Button>
+                </CardSection>
+              </Card>
+            );
+        default:
+        return(
+          <Text>Why no status??</Text>
+        );
+    }
+}
+
+
+
+    onLogOut()
+    {
+      console.log("Log out");
+      console.log(this.props);
+      const { navigation } = this.props;
+
+      AsyncStorage.setItem('@User:key', '');
+      AsyncStorage.setItem('@Token:key', '');
+
+      navigation.navigate('SignIn');
+    }
+
+
+
 
     render() {
         return (
         <ScrollView>
-          <Card>
-            <CardSection>
-                <View >
-                </View>
-                <View style={styles.headerContentStyle}>
-                    <Text>Dashboash</Text>
-                    <Text>Dashboash</Text>
-                </View>
-            </CardSection>
-            <CardSection>
-            <VictoryChart>
-            <VictoryStack>
-              <VictoryArea
-                data={[
-                  {x: 'a', y: 2}, {x: 'b', y: 3}, {x: 'c', y: 5}, {x: 'd', y: 4}, {x: 'e', y: 7}
-                ]}
-              />
-              <VictoryArea
-                data={[
-                  {x: 'a', y: 1}, {x: 'b', y: 4}, {x: 'c', y: 5}, {x: 'd', y: 7}, {x: 'e', y: 5}
-                ]}
-              />
-              <VictoryArea
-                data={[
-                  {x: 'a', y: 3}, {x: 'b', y: 2}, {x: 'c', y: 6}, {x: 'd', y: 2}, {x: 'e', y: 6}
-                ]}
-              />
-              <VictoryArea
-                data={[
-                  {x: 'a', y: 2}, {x: 'b', y: 3}, {x: 'c', y: 3}, {x: 'd', y: 4}, {x: 'e', y: 10}
-                ]}
-              />
-            </VictoryStack>
-          </VictoryChart> 
-          </CardSection>
-          <View>
-          <VictoryChart width={600} height={470} scale={{ x: "time" }}
-          containerComponent={
-            <VictoryZoomContainer
-              zoomDimension="x"
-              zoomDomain={this.state.zoomDomain}
-              onZoomDomainChange={this.handleZoom.bind(this)}
-            />
-          }
-        >
-            <VictoryLine
-              style={{
-                data: { stroke: "tomato" }
-              }}
-              data={[
-                { a: new Date(1982, 1, 1), b: 125 },
-                { a: new Date(1987, 1, 1), b: 257 },
-                { a: new Date(1993, 1, 1), b: 345 },
-                { a: new Date(1997, 1, 1), b: 515 },
-                { a: new Date(2001, 1, 1), b: 132 },
-                { a: new Date(2005, 1, 1), b: 305 },
-                { a: new Date(2011, 1, 1), b: 270 },
-                { a: new Date(2015, 1, 1), b: 470 }
-              ]}
-              x="a"
-              y="b"
-            />
-
-          </VictoryChart>
-          <VictoryChart
-            padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
-            width={600} height={100} scale={{ x: "time" }}
-            containerComponent={
-              <VictoryBrushContainer
-                brushDimension="x"
-                brushDomain={this.state.zoomDomain}
-                onBrushDomainChange={this.handleZoom.bind(this)}
-              />
-            }
-          >
-            <VictoryAxis
-              tickFormat={(x) => new Date(x).getFullYear()}
-            />
-            <VictoryLine
-              style={{
-                data: { stroke: "tomato" }
-              }}
-              data={[
-                { key: new Date(1982, 1, 1), b: 125 },
-                { key: new Date(1987, 1, 1), b: 257 },
-                { key: new Date(1993, 1, 1), b: 345 },
-                { key: new Date(1997, 1, 1), b: 515 },
-                { key: new Date(2001, 1, 1), b: 132 },
-                { key: new Date(2005, 1, 1), b: 305 },
-                { key: new Date(2011, 1, 1), b: 270 },
-                { key: new Date(2015, 1, 1), b: 470 }
-              ]}
-              x="key"
-              y="b"
-            />
-          </VictoryChart>
-          </View>
-
-            <CardSection>
-                <Button onPress={this.onLogOut.bind(this)}>
-                    Log Out
-                </Button>
-            </CardSection>
-        </Card>
+          {this.renderDashboardType()}
         </ScrollView>
         );
       }
 }
-  
+
 const styles = {
   headerContentStyle: {
       flexDirection: 'column',
-      justifyContent: 'space-around'
+      justifyContent: 'space-around',
   },
   headerTextStyle: {
+    fontSize: 24,
+    color: 'black',
+    textAlign: 'center',
+
+  },
+  header1TextStyle: {
+    fontSize: 20,
+    color: 'black',
+  },
+  header2TextStyle: {
     fontSize: 18,
-    color: 'black'
+    color: 'black',
+
   },
   thumbnailStyle: {
       height: 50,
@@ -165,7 +210,34 @@ const styles = {
       height: 300,
       flex: 1,
       width: null
+  },
+  pieStyle: {
+    data: { fill: 'tomato' }
+  },
+  inputStyle: {
+      color: '#000',
+      paddingRight: 5,
+      paddingLeft: 5,
+      fontSize: 18,
+      lineHeight: 23,
+      flex: 2
+  },
+  labelStyle: {
+      fontSize: 18,
+      paddingLeft: 0,
+      flex: 1
+  },
+  containerStyle: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 30,
+      marginBottom: 30,
+  },
+  iosTopStyle:
+  {
+    paddingTop: 100
   }
 };
-  
+
   export { Dash };

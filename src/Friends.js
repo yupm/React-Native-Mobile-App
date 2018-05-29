@@ -48,6 +48,15 @@ class Friends extends Component {
     console.log(url);
     console.log('Follow user');
 
+    axios.post(url)
+    .then((responseJson) => {
+      console.log("Success")
+      console.log(responseJson)
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
     // axios.post(url)
     // .then(function (response) {
     //   console.log(response);
@@ -64,6 +73,15 @@ class Friends extends Component {
     console.log('Unfollow user');
     console.log(url);
 
+
+    axios.post(url)
+    .then((responseJson) => {
+      console.log("Success")
+      console.log(responseJson)
+    })
+    .catch((error) => {
+      console.error(error);
+    });
     // axios.post(url)
     // .then(function (response) {
     //   console.log(response);
