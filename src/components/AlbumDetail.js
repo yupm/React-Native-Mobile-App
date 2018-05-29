@@ -3,6 +3,7 @@ import { Text, View, Image, Linking } from 'react-native';
 import Card from './Card';
 import CardSection from './CardSection';
 import Button from './Button';
+import { axios } from 'axios';
 
 const AlbumDetail = ({ record }) => {
     const { thumbnailImageURL, dateCreated, isDeleted, like, imageURL, likeCount, id, key, username } = record;
@@ -12,7 +13,36 @@ const AlbumDetail = ({ record }) => {
         headerTextStyle,
         imageStyle } = styles;
 
-    
+
+
+    const onPressLike = () => {
+
+      console.log("in like function");
+      console.log(username);
+      var bodyFormData = new FormData();
+
+      bodyFormData.append('key', key);
+      bodyFormData.append('username', input);
+      bodyFormData.append('like', true);
+
+      /*
+      axios({
+          method: 'post',
+          url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/sub/image/friend/list',
+          data: bodyFormData,
+          config: { headers: {'Content-Type': 'multipart/form-data' }}
+      })
+      .then((response) => {
+          //handle success
+          console.log("Uploaded");
+          console.log(response.data.results.URL);
+          this.setState({ albums: response.data.results.URL});
+      })
+      .catch((error) => {
+        console.error(error);
+      });*/
+
+    };
 
     return (
         <Card>
@@ -34,7 +64,7 @@ const AlbumDetail = ({ record }) => {
                 source={{ uri: imageURL }} />
             </CardSection>
             <CardSection>
-                <Button  >
+                <Button onPress={onPressLike} >
                     Like
                 </Button>
             </CardSection>
