@@ -5,12 +5,14 @@ import CardSection from './CardSection';
 import Button from './Button';
 
 const AlbumDetail = ({ record }) => {
-    const { title, artist, thumbnail_image, image, url } = record;
+    const { thumbnailImageURL, dateCreated, isDeleted, like, imageURL, likeCount, id, key, username } = record;
     const { thumbnailStyle,
         headerContentStyle,
         thumbnailContainerStyle,
         headerTextStyle,
         imageStyle } = styles;
+
+    
 
     return (
         <Card>
@@ -18,21 +20,21 @@ const AlbumDetail = ({ record }) => {
                 <View style={thumbnailContainerStyle}>
                     <Image
                         style={thumbnailStyle}
-                        source={{ uri: thumbnail_image }}
+                        source={{ uri: thumbnailImageURL }}
                     />
                 </View>
                 <View style={headerContentStyle}>
-                    <Text style={headerTextStyle}>{title}</Text>
-                    <Text>{artist}</Text>
+                    <Text style={headerTextStyle}>{username}</Text>
+                    <Text>{dateCreated}</Text>
                 </View>
             </CardSection>
             <CardSection>
                 <Image
                 style={imageStyle}
-                source={{ uri: image }} />
+                source={{ uri: imageURL }} />
             </CardSection>
             <CardSection>
-                <Button onPress={()=> Linking.openURL(url)} >
+                <Button  >
                     Like
                 </Button>
             </CardSection>

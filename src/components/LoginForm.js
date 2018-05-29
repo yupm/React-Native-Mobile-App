@@ -7,7 +7,6 @@ import axios from 'axios';
 class LoginForm extends Component {
     state = { username: '', password: '', error: '', loading: null };
 
-
     onButtonPress() {
         const { username, password } = this.state;
         const { navigation } = this.props;
@@ -25,24 +24,36 @@ class LoginForm extends Component {
             data: bodyFormData,
             config: { headers: {'Content-Type': 'multipart/form-data' }}
         })
-        .then(function (response) {
+        .then((response) => {
             //handle success
             console.log("Yes, Login info");
             console.log(response.data.results.token);
             console.log(response);
 
             try {
-                 AsyncStorage.setItem('@User:key', username);
-                 AsyncStorage.setItem('@Token:key', response.data.results.token);
+                  AsyncStorage.setItem('@User:key', username);
+                  AsyncStorage.setItem('@Token:key', response.data.results.token);
                  //AsyncStorage.setItem('@IsAdmin:key', );
-                 
+
             } catch (error) {
               // Error saving data
               console.log("Error saving key");
               console.log(error);
             }
-            navigation.navigate('Home', { jwtToken: response.data.results.token });
-            
+
+            try {
+              AsyncStorage.getItem('@User:key').then((value) =>{
+                if (value !== null){
+                  // We have data!!
+                  console.log("Is the value stored?");
+                  console.log(value);
+                }
+              });
+            } catch (error) {
+              // Error retrieving data
+            }
+
+            navigation.navigate('Home', { jwtToken: response.data.results.token, userId: username });
 
         })
         .catch(this.onLoginFail.bind(this));

@@ -91,21 +91,37 @@ class Friends extends Component {
     // });
   }
 
-  GetListViewItem (username, sub) {
-    Alert.alert('Follow!',
-    username,
-      [
-      {text: 'Cancel', onPress: () => this.UnFollowUser(username), style: 'cancel'},
-      {text: 'OK', onPress: () => this.FollowUser(username)},
-    ],
-    { cancelable: false }
-  );
+  GetListViewItem (username, sub, following) {
+    if(!following)
+    {
+      Alert.alert('Follow!',
+      username,
+        [
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'OK', onPress: () => this.FollowUser(username)},
+      ],
+      { cancelable: false }
+      );
+    }
+    else {
+      Alert.alert('Unfollow!',
+      username,
+        [
+        {text: 'Cancel', onPress: () =>  console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'OK', onPress: () => this.UnFollowUser(username)},
+      ],
+      { cancelable: false }
+    );
+    }
 }
 
 SearchFilterFunction(text){
+  const { username } = this.state;
   console.log(text);
+  console.log(username);
   let bodyFormData = new FormData();
   bodyFormData.append('search', text);
+  bodyFormData.append('username', username);
   axios({
       method: 'post',
       url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/sub/users/search',
@@ -115,7 +131,6 @@ SearchFilterFunction(text){
   .then((responseJson) => {
     console.log("in here");
     console.log(responseJson.data.results.users)
-
     let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState({
       isLoading: false,
@@ -167,8 +182,12 @@ SearchFilterFunction(text){
         <ListView
           dataSource={this.state.dataSource}
           renderSeparator= {this.ListViewItemSeparator}
-          renderRow={(rowData) => <Text style={styles.rowViewContainer}
-          onPress={this.GetListViewItem.bind(this, rowData.username,rowData.sub )} >{rowData.username}</Text>}
+          renderRow={(rowData) =>
+            <View>
+            <Text style={styles.rowViewContainer}
+                  onPress={this.GetListViewItem.bind(this, rowData.username,rowData.sub, rowData.is_following )}
+                  >{rowData.username}</Text>
+            </View>}
           enableEmptySections={true}
           style={{marginTop: 10}}
         />
