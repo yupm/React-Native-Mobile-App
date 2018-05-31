@@ -7,25 +7,213 @@ import { VictoryArea, VictoryLabel, VictoryAxis, VictoryBar, VictoryZoomContaine
 
 
 class Dash extends Component {
-    state = { isAdmin: false };
+    state = { isAdmin: true, num_users: '', signups: [], ratio_male: '', ratio_female: '', age_cat: [], top_tags: [], num_followers: '', num_avg_likes: '',
+              recommend_followers: [], one_mth_image: '', last_login: '' };
 
     constructor() {
         super();
+        this._bootstrapAsync();
       }
 
       _bootstrapAsync = async () => {
         const userToken = await AsyncStorage.getItem('@User:key');
         this.setState({ username: userToken });
+
+        const userType = await AsyncStorage.getItem('@User:key');
+
+        console.log("the  state data is ");
+        console.log(this.state.username);
      };
 
     componentWillMount() {
         switch(this.state.isAdmin)
         {
             case true:
+              //Call all admin apis here
+              axios({
+                  method: 'post',
+                  url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/getTotalNumberOfUsers',
+                  config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  console.log("getTotalNumberOfUsers");
+                  console.log(response);
+
+                  this.setState({ num_users: response.data.results.totalNumberOfUsers });
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
+              axios({
+                  method: 'post',
+                  url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/numberOfNewSignUps',
+                  config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  console.log("numberOfNewSignUps");
+                  console.log(response);
+
+                  var signUpData = [];
+                  for ( property in response.data.results.numberOfNewSignUps ) {
+                    signUpData.push( {x: property, y: response.data.results.numberOfNewSignUps[property]});
+                  }
+
+                  console.log(signUpData);
+
+                  this.setState({ signups: signUpData });
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
+              axios({
+                  method: 'post',
+                  url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/getDistributionByGender',
+                  config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  console.log("getDistributionByGender");
+                  console.log(response);
+                  this.setState({ ratio_male: response.data.results.getDistributionByGender.Male });
+                  this.setState({ ratio_female: response.data.results.getDistributionByGender.Female });
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
+              axios({
+                method: 'post',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/getDistributionByAge',
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  console.log("getDistributionByAge");
+                  console.log(response);
+
+                  var ageData = [
+                        { x: "18-21", y: response.data.results.getDistributionByAge["18-21"]},
+                        { x:"22-28", y: response.data.results.getDistributionByAge["22-28"]},
+                        { x: "29-38", y: response.data.results.getDistributionByAge["29-38"]},
+                        { x: "39-55", y: response.data.results.getDistributionByAge["39-55"]},
+                        { x: "56-76", y: response.data.results.getDistributionByAge[ "56-76"]},
+                        { x: "77-99", y: response.data.results.getDistributionByAge["77-99"]},
+                  ];
+                  console.log("age data is");
+
+                  console.log(ageData);
+
+                  this.setState({ age_cat: ageData });
+
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
               break;
             case false:
-              break;
             default:
+              // Call all user apis here
+              //num followers
+                let bodyFormData = new FormData();
+                bodyFormData.append('username', this.state.username);
+                axios({
+                    method: 'post',
+                    url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/getNumberOfFriends',
+                    data: bodyFormData,
+                    config: { headers: {'Content-Type': 'text/plain' }}
+                })
+                .then((response) => {
+                    //handle success
+                    //console.log(response);
+                    this.setState({ num_followers: response.data.results.getNumberofFriends });
+
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+
+
+              //ave likes photos
+              axios({
+                method: 'post',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/avgLikesPerPhoto',
+                data: bodyFormData,
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  //console.log(response);
+                  this.setState({ num_avg_likes: response.data.results["avgLikes"] });
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
+              //list of ppl to follow
+              axios({
+                method: 'post',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/recommendFriends',
+                data: bodyFormData,
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  ///console.log(response);
+                  this.setState({ recommend_followers: response.data.results.recommendedFriendsOutput });
+
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
+              //one month ago
+              axios({
+                method: 'post',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/getMonthAgoMemory',
+                data: bodyFormData,
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  //console.log(response);
+                  this.setState({ one_mth_image: response.data.results.getOneMonthAgoMemory });
+
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+              let bodyFormData2 = new FormData();
+              bodyFormData2.append('username', this.state.username);
+              console.log(this.state.username);
+              //last login
+              axios({
+                method: 'post',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/lastlogin',
+                data: bodyFormData2,
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  console.log(response);
+                  this.setState({ last_login: response.data.results.lastLogin });
+
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
               break;
         }
     }
@@ -45,28 +233,28 @@ class Dash extends Component {
                 <CardSection>
                     <View style={styles.headerContentStyle}>
                         <Text style={styles.header1TextStyle}>Total Number of Registered Users:</Text>
-                        <Text style={styles.header2TextStyle}>10000</Text>
+                        <Text style={styles.header2TextStyle}>{this.state.num_users}</Text>
                     </View>
                 </CardSection>
                 <Text style={styles.header1TextStyle}>Signups:</Text>
                 <CardSection>
-                <VictoryChart>
-                  <VictoryStack>
-                    <VictoryArea
-                      data={[
-                        {x: 'a', y: 2}, {x: 'b', y: 3}, {x: 'c', y: 5}, {x: 'd', y: 4}, {x: 'e', y: 7}
-                      ]}
+                  <VictoryChart height={400} width={400}
+                      domainPadding={{ x: 50, y: [0, 20] }}
+                  >
+                    <VictoryBar
+                      style={styles.pieStyle}
+                      data={this.state.signups}
                     />
-                  </VictoryStack>
-                </VictoryChart>
+                  </VictoryChart>
                 </CardSection>
+
                   <Text style={styles.header1TextStyle}>Gender Ratio:</Text>
                   <CardSection>
                       <VictoryPie
-                      colorScale={["pink", "blue" ]}
+                      colorScale={["blue", "pink" ]}
                       width={400} height={400}
                       data={[
-                        { x: 'Male', y: 120 }, { x: 'Female', y: 150 }
+                        { x: 'Male', y: this.state.ratio_male }, { x: 'Female', y: this.state.ratio_female }
                       ]}
                       style={{ labels: { fontSize: 20, fill: 'white' } }}
                       />
@@ -76,16 +264,10 @@ class Dash extends Component {
                 <CardSection>
                   <VictoryChart height={400} width={400}
                   domainPadding={{ x: 50, y: [0, 20] }}
-                  scale={{ x: "time" }}
                   >
                   <VictoryBar
                     style={styles.pieStyle}
-                    data={[
-                      { x: new Date(1986, 1, 1), y: 2 },
-                      { x: new Date(1996, 1, 1), y: 3 },
-                      { x: new Date(2006, 1, 1), y: 5 },
-                      { x: new Date(2016, 1, 1), y: 4 }
-                    ]}
+                    data={this.state.age_cat}
                   />
                   </VictoryChart>
                 </CardSection>
@@ -103,17 +285,22 @@ class Dash extends Component {
                 </CardSection>
                 </Card>
             );
+
+
+
         case false:
+           const { one_mth_image } = this.state;
+        ////////////////////////////////////////////////////////////////////////USER//////////////////////////////////////////////////
             return(
               <Card style={styles.iosTopStyle}>
                 <CardSection>
                   <View style={styles.containerStyle}>
                       <View style={styles.inputStyle}>
-                        <Text  style={styles.header1TextStyle}>100</Text>
+                        <Text  style={styles.header1TextStyle}>{this.state.num_followers}</Text>
                         <Text  style={styles.labelStyle}>Followers</Text>
                       </View>
                       <View style={styles.inputStyle}>
-                      <Text  style={styles.header1TextStyle}>8</Text>
+                      <Text  style={styles.header1TextStyle}>{this.state.num_avg_likes}</Text>
                       <Text  style={styles.labelStyle}>Ave. Likes/Photo </Text>
                       </View>
                   </View>
@@ -126,14 +313,14 @@ class Dash extends Component {
                   </View>
                 </CardSection>
 
-
                 <CardSection>
                   <Text style={styles.header1TextStyle}>One month ago: </Text>
-                  <Image></Image>
+                  <Image ></Image>
                 </CardSection>
 
                 <CardSection>
                   <Text style={styles.header1TextStyle}>Last login: </Text>
+                  <Text  style={styles.labelStyle}>{this.state.last_login}</Text>
                 </CardSection>
 
                 <CardSection>
@@ -215,11 +402,8 @@ const styles = {
     data: { fill: 'tomato' }
   },
   inputStyle: {
-      color: '#000',
       paddingRight: 5,
       paddingLeft: 5,
-      fontSize: 18,
-      lineHeight: 23,
       flex: 2
   },
   labelStyle: {

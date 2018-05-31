@@ -16,7 +16,7 @@ class NewsFeed extends React.Component {
       console.log(userId);
       return (
         <View style={{ flex: 1 }}>
-                <AlbumList input={ userId } />
+                <AlbumList user={ userId } />
         </View>
       );
     }

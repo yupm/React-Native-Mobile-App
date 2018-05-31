@@ -27,13 +27,12 @@ class LoginForm extends Component {
         .then((response) => {
             //handle success
             console.log("Yes, Login info");
-            console.log(response.data.results.token);
             console.log(response);
 
             try {
                   AsyncStorage.setItem('@User:key', username);
                   AsyncStorage.setItem('@Token:key', response.data.results.token);
-                 //AsyncStorage.setItem('@IsAdmin:key', );
+                  AsyncStorage.setItem('@IsAdmin:key', response.data.results['custom:admin']);
 
             } catch (error) {
               // Error saving data

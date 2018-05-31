@@ -5,53 +5,21 @@ import CardSection from './CardSection';
 import Button from './Button';
 import { axios } from 'axios';
 
-const AlbumDetail = ({ record }) => {
+const AlbumDetail = ({ record, owner, addLike }) => {
     const { thumbnailImageURL, dateCreated, isDeleted, like, imageURL, likeCount, id, key, username } = record;
     const { thumbnailStyle,
         headerContentStyle,
         thumbnailContainerStyle,
         headerTextStyle,
-        imageStyle } = styles;
+        imageStyle,
+        likeStyle } = styles;
 
-
-
-    const onPressLike = () => {
-
-      console.log("in like function");
-      console.log(username);
-      var bodyFormData = new FormData();
-
-      bodyFormData.append('key', key);
-      bodyFormData.append('username', input);
-      bodyFormData.append('like', true);
-
-      /*
-      axios({
-          method: 'post',
-          url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/sub/image/friend/list',
-          data: bodyFormData,
-          config: { headers: {'Content-Type': 'multipart/form-data' }}
-      })
-      .then((response) => {
-          //handle success
-          console.log("Uploaded");
-          console.log(response.data.results.URL);
-          this.setState({ albums: response.data.results.URL});
-      })
-      .catch((error) => {
-        console.error(error);
-      });*/
-
-    };
 
     return (
         <Card>
             <CardSection>
                 <View style={thumbnailContainerStyle}>
-                    <Image
-                        style={thumbnailStyle}
-                        source={{ uri: thumbnailImageURL }}
-                    />
+                    <Text style={likeStyle}>{likeCount}</Text>
                 </View>
                 <View style={headerContentStyle}>
                     <Text style={headerTextStyle}>{username}</Text>
@@ -64,7 +32,7 @@ const AlbumDetail = ({ record }) => {
                 source={{ uri: imageURL }} />
             </CardSection>
             <CardSection>
-                <Button onPress={onPressLike} >
+                <Button onPress={()=> {addLike(key)}} >
                     Like
                 </Button>
             </CardSection>
@@ -96,6 +64,12 @@ const styles = {
         height: 300,
         flex: 1,
         width: null
+    },
+    likeStyle:
+    {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: 'red'
     }
 };
 
