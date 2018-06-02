@@ -12,8 +12,6 @@ class NewsFeed extends React.Component {
       const jwtToken = navigation.getParam('jwtToken', 'NO_TOKEN');
       const userId = navigation.getParam('userId', 'NO_ID');
 
-      console.log("I am in newsfeed");
-      console.log(userId);
       return (
         <View style={{ flex: 1 }}>
                 <AlbumList user={ userId } />

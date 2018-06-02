@@ -45,25 +45,14 @@ class Friends extends Component {
   FollowUser(followThis) {
     const { username } = this.state;
     var url = 'http://userapineo4j-test.ap-southeast-1.elasticbeanstalk.com/users/follow/' + username + '|' + followThis ;
-    console.log(url);
-    console.log('Follow user');
 
     axios.post(url)
     .then((responseJson) => {
-      console.log("Success")
       console.log(responseJson)
     })
     .catch((error) => {
       console.error(error);
     });
-
-    // axios.post(url)
-    // .then(function (response) {
-    //   console.log(response);
-    // })
-    // .catch(function (error) {
-    //   console.log(error);
-    // });
   }
 
   UnFollowUser(unfollowThis) {
@@ -71,8 +60,6 @@ class Friends extends Component {
      var url = 'http://userapineo4j-test.ap-southeast-1.elasticbeanstalk.com/users/unfollow/' + username + '|' + unfollowThis ;
 
     console.log('Unfollow user');
-    console.log(url);
-
 
     axios.post(url)
     .then((responseJson) => {
@@ -82,13 +69,6 @@ class Friends extends Component {
     .catch((error) => {
       console.error(error);
     });
-    // axios.post(url)
-    // .then(function (response) {
-    //   console.log(response);
-    // })
-    // .catch(function (error) {
-    //   console.log(error);
-    // });
   }
 
   GetListViewItem (username, sub, following) {

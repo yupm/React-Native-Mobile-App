@@ -1,34 +1,46 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, ListView, TextInput, AsyncStorage, ScrollView, Image } from 'react-native';
+import { Text, StyleSheet, View, ListView, TextInput, AsyncStorage, ScrollView, Image, YellowBox, FlatList } from 'react-native';
 import axios from 'axios';
 import { Button, Card, CardSection, Input, Spinner } from './components/common';
 import { withNavigation } from 'react-navigation';
-import { VictoryArea, VictoryLabel, VictoryAxis, VictoryBar, VictoryZoomContainer, VictoryBrushContainer, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryStack, VictoryErrorBar, VictoryVoronoiTooltip, VictoryTooltip } from 'victory-native'; // 0.17.4
+import { VictoryArea, VictoryLabel, VictoryAxis, VictoryTheme, VictoryBar, VictoryZoomContainer, VictoryBrushContainer, VictoryChart, VictoryGroup, VictoryLine, VictoryPie, VictoryScatter, VictoryStack, VictoryErrorBar, VictoryVoronoiTooltip, VictoryTooltip } from 'victory-native'; // 0.17.4
+YellowBox.ignoreWarnings(['source.uri']);
 
 
 class Dash extends Component {
-    state = { isAdmin: true, num_users: '', signups: [], ratio_male: '', ratio_female: '', age_cat: [], top_tags: [], num_followers: '', num_avg_likes: '',
-              recommend_followers: [], one_mth_image: '', last_login: '' };
+    state = { isAdmin: false, num_users: '', signups: [], ratio_male: '', ratio_female: '', age_cat: [], top_tags: [], num_followers: '', num_avg_likes: '',
+              recommend_followers: [], one_mth_image: '', last_login: '', likesActivity: [] };
 
     constructor() {
         super();
-        this._bootstrapAsync();
       }
 
       _bootstrapAsync = async () => {
+        var userType = await AsyncStorage.getItem('@IsAdmin:key');
+        if(userType == 'true')
+        {
+          this.setState({ isAdmin: true });
+        }
+        else if(userType == 'false')
+        {
+          this.setState({ isAdmin: false });
+        }
+
         const userToken = await AsyncStorage.getItem('@User:key');
         this.setState({ username: userToken });
-
-        const userType = await AsyncStorage.getItem('@User:key');
-
-        console.log("the  state data is ");
-        console.log(this.state.username);
      };
 
-    componentWillMount() {
-        switch(this.state.isAdmin)
-        {
+     componentWillMount(){
+        this._bootstrapAsync().then(()=>{
+
+          this.callApis()});
+     }
+
+
+     callApis() {
+        switch (this.state.isAdmin) {
             case true:
+
               //Call all admin apis here
               axios({
                   method: 'post',
@@ -39,13 +51,11 @@ class Dash extends Component {
                   //handle success
                   console.log("getTotalNumberOfUsers");
                   console.log(response);
-
                   this.setState({ num_users: response.data.results.totalNumberOfUsers });
               })
               .catch((error) => {
                 console.error(error);
               });
-
 
               axios({
                   method: 'post',
@@ -70,6 +80,28 @@ class Dash extends Component {
                 console.error(error);
               });
 
+              axios({
+                method: 'post',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/dashboard-module/dashboard/getImageLikesActivity',
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  console.log("getLikesActivity");
+                  console.log(response);
+
+                  var likeActivityData = [];
+                  for ( property in response.data.results.getLikesActivity ) {
+                    likeActivityData.push( {x: property, y: response.data.results.getLikesActivity[property]});
+                  }
+                  console.log(likeActivityData);
+
+                  this.setState({ likesActivity: likeActivityData });
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
 
               axios({
                   method: 'post',
@@ -82,6 +114,20 @@ class Dash extends Component {
                   console.log(response);
                   this.setState({ ratio_male: response.data.results.getDistributionByGender.Male });
                   this.setState({ ratio_female: response.data.results.getDistributionByGender.Female });
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+
+
+              axios({
+                method: 'get',
+                url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/get-uploaded-image-stats',
+                config: { headers: {'Content-Type': 'text/plain' }}
+              })
+              .then((response) => {
+                  //handle success
+                  this.setState({ top_tags: response.data });
               })
               .catch((error) => {
                 console.error(error);
@@ -117,6 +163,7 @@ class Dash extends Component {
                 console.error(error);
               });
 
+
               break;
             case false:
             default:
@@ -134,7 +181,6 @@ class Dash extends Component {
                     //handle success
                     //console.log(response);
                     this.setState({ num_followers: response.data.results.getNumberofFriends });
-
                 })
                 .catch((error) => {
                   console.error(error);
@@ -167,14 +213,19 @@ class Dash extends Component {
               })
               .then((response) => {
                   //handle success
-                  ///console.log(response);
-                  this.setState({ recommend_followers: response.data.results.recommendedFriendsOutput });
+                  console.log(response);
+                  let recc = JSON.stringify(response.data.results.recommendedFriendsOutput);
 
+                  var recommend = [];
+                  for ( property in response.data.results.recommendedFriendsOutput ) {
+                    recommend.push( {key: property, namae: response.data.results.recommendedFriendsOutput[property]});
+                  }
+
+                  this.setState({ recommend_followers: recommend });
               })
               .catch((error) => {
                 console.error(error);
               });
-
 
               //one month ago
               axios({
@@ -213,11 +264,13 @@ class Dash extends Component {
                 console.error(error);
               });
 
-
               break;
         }
     }
 
+    handleZoom(domain) {
+      this.setState({ zoomDomain: domain });
+    }
 
   renderDashboardType(){
     switch(this.state.isAdmin)
@@ -236,6 +289,17 @@ class Dash extends Component {
                         <Text style={styles.header2TextStyle}>{this.state.num_users}</Text>
                     </View>
                 </CardSection>
+
+                <Text style={styles.header1TextStyle}>Likes Activity:</Text>
+                <VictoryChart height={400} width={400}
+                domainPadding={{ x: 10, y: [0, 20] }}
+                >
+                  <VictoryBar
+                    data={this.state.likesActivity}
+                  />
+                </VictoryChart>
+
+
                 <Text style={styles.header1TextStyle}>Signups:</Text>
                 <CardSection>
                   <VictoryChart height={400} width={400}
@@ -248,7 +312,7 @@ class Dash extends Component {
                   </VictoryChart>
                 </CardSection>
 
-                  <Text style={styles.header1TextStyle}>Gender Ratio:</Text>
+                  <Text style={styles.header1TextStyle}>Distribution by Gender:</Text>
                   <CardSection>
                       <VictoryPie
                       colorScale={["blue", "pink" ]}
@@ -260,7 +324,7 @@ class Dash extends Component {
                       />
                 </CardSection>
 
-                <Text style={styles.header1TextStyle}>Age:</Text>
+                <Text style={styles.header1TextStyle}>Distribution by Age:</Text>
                 <CardSection>
                   <VictoryChart height={400} width={400}
                   domainPadding={{ x: 50, y: [0, 20] }}
@@ -272,10 +336,14 @@ class Dash extends Component {
                   </VictoryChart>
                 </CardSection>
 
-                <Text style={styles.header1TextStyle}>Top 10 Tags uploaded by users:</Text>
+                <Text style={styles.header1TextStyle}>Top Tags uploaded by users [Past Week]:</Text>
                 <CardSection>
-                <Text>Applee</Text>
-
+                <FlatList
+                    data={ this.state.top_tags}
+                    renderItem={({item}) => <View style={styles.tagStyle}><Text style={styles.item}>{item.key}</Text>
+                                                  <Text style={styles.item}>{item.value}</Text>
+                                          </View>}
+                  />
                 </CardSection>
 
                 <CardSection>
@@ -285,12 +353,9 @@ class Dash extends Component {
                 </CardSection>
                 </Card>
             );
-
-
-
         case false:
+            ////////////////////////////////////////////////////////////////////////USER//////////////////////////////////////////////////
            const { one_mth_image } = this.state;
-        ////////////////////////////////////////////////////////////////////////USER//////////////////////////////////////////////////
             return(
               <Card style={styles.iosTopStyle}>
                 <CardSection>
@@ -309,13 +374,24 @@ class Dash extends Component {
 
                 <CardSection>
                   <View>
-                      <Text style={styles.header2TextStyle}> List of recommended people to follow: </Text>
+                      <Text style={styles.header1TextStyle}> List of recommended people to follow: </Text>
+                      <CardSection>
+                        <FlatList
+                            data={ this.state.recommend_followers}
+                            renderItem={({item}) => <View style={styles.tagStyle}><Text style={styles.item}>{item.key}</Text>
+                                                          <Text style={styles.item}>{item.namae}</Text>
+                                                  </View>}
+                          />
+                </CardSection>
                   </View>
                 </CardSection>
 
                 <CardSection>
                   <Text style={styles.header1TextStyle}>One month ago: </Text>
-                  <Image ></Image>
+                  <Image
+                    style={styles.imageStyle}
+                    source={{ uri: one_mth_image }} >
+                </Image>
                 </CardSection>
 
                 <CardSection>
@@ -341,8 +417,6 @@ class Dash extends Component {
 
     onLogOut()
     {
-      console.log("Log out");
-      console.log(this.props);
       const { navigation } = this.props;
 
       AsyncStorage.setItem('@User:key', '');
@@ -418,10 +492,20 @@ const styles = {
       marginTop: 30,
       marginBottom: 30,
   },
+  tagStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+},
   iosTopStyle:
   {
     paddingTop: 100
-  }
+  },
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
 };
 
   export { Dash };

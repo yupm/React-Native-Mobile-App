@@ -27,8 +27,6 @@ class Photo extends React.Component {
   }
 
   _bootstrapAsync = async () => {
-    console.log("Photostart");
-
     const userToken = await AsyncStorage.getItem('@User:key');
 
     this.setState({ username: userToken });
@@ -85,8 +83,6 @@ class Photo extends React.Component {
 
                                 this.setState({ uploaded: false });
 
-                                console.log(bodyFormData);
-                                console.log(response);
 
                                 axios({
                                     method: 'post',

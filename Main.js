@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Text, View, YellowBox } from 'react-native';
 import { NewsFeed } from './src/NewsFeed';
+import { Memories } from './src/Memories';
 import { Login } from './src/Login';
 import { Dash } from './src/Dash';
 import { Registration } from './src/Registration';
@@ -12,7 +13,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader', 'Remote debugger']);
 //import { Ionicons } from '@expo/vector-icons'; // Version can be specified in package.json
-
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -66,6 +66,15 @@ class NewsFeedScreen extends React.Component {
     }
 }
 
+class ProfileScreen extends React.Component {
+  render() {
+    return (
+      <Memories navigation={this.props.navigation} />
+    );
+  }
+}
+
+
 class SearchScreen extends React.Component {
   static navigationOptions = {
     headerTitleStyle: { alignSelf: 'center' },
@@ -106,6 +115,7 @@ const AuthStack = createStackNavigator({
 const MainNavigator = createBottomTabNavigator({
   Home: { screen: NewsFeedScreen },
   Upload: { screen: PhotoScreen },
+  Memoir: { screen: ProfileScreen },
   Search: { screen: SearchScreen },
   Dashboard: { screen: DashScreen },
 },
@@ -118,7 +128,10 @@ const MainNavigator = createBottomTabNavigator({
         iconName = `ios-information-circle${focused ? '' : '-outline'}`;
       } else if (routeName === 'Upload') {
         iconName = `ios-aperture${focused ? '' : '-outline'}`;
-      } else if (routeName === 'Search') {
+      } else if (routeName === 'Memoir') {
+      iconName = `ios-archive${focused ? '' : '-outline'}`;
+      }
+      else if (routeName === 'Search') {
         iconName = `ios-search${focused ? '' : '-outline'}`;
       }
       else if (routeName === 'Dashboard') {

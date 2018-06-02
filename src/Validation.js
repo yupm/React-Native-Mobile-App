@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, AsyncStorage } from 'react-native';
 import { Button, Input, CardSection } from './components/common';
 import { withNavigation } from 'react-navigation';
 import axios from 'axios';
@@ -13,15 +13,11 @@ class Validation extends React.Component {
     const userId = navigation.getParam('userId', 'NO_ID');
     const pass = navigation.getParam('pass', 'NO_PW');
 
-    console.log(userId);
     this.setState({ username: userId });
     this.setState({ password: pass });
-
   }
 
   onLoginFail() {
-      console.log("fail");
-      console.log(this.response);
       this.setState({
           loading: false,
           error: 'Verification Failed'
@@ -64,10 +60,9 @@ class Validation extends React.Component {
           })
           .then(function (response) {
               //handle success
-              console.log("yay");
-              console.log(response.data.results.token);
-              console.log(response);
-              navigation.navigate('Home', { jwtToken: response.data.results.token });
+              AsyncStorage.setItem('@User:key', username);
+              AsyncStorage.setItem('@IsAdmin:key', 'false');
+              navigation.navigate('Home', { jwtToken: response.data.results.token, userId: username });
 
           })
           .catch(this.onLoginFail.bind(this));

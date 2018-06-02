@@ -26,8 +26,6 @@ class LoginForm extends Component {
         })
         .then((response) => {
             //handle success
-            console.log("Yes, Login info");
-            console.log(response);
 
             try {
                   AsyncStorage.setItem('@User:key', username);
@@ -44,8 +42,6 @@ class LoginForm extends Component {
               AsyncStorage.getItem('@User:key').then((value) =>{
                 if (value !== null){
                   // We have data!!
-                  console.log("Is the value stored?");
-                  console.log(value);
                 }
               });
             } catch (error) {

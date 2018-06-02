@@ -11,14 +11,13 @@ class AlbumList extends Component {
       const { username } = this.state;
 
       this._bootstrapAsync();
-
-      // axios.get('http://rallycoding.herokuapp.com/api/music_albums')
-      //    .then(response => this.setState({ albums: response.data }));
     }
 
     _bootstrapAsync = async () => {
       const { user } = this.props;
       let bodyFormData = new FormData();
+
+      console.log(user);
 
       bodyFormData.append('username', user);
       axios({
@@ -30,7 +29,7 @@ class AlbumList extends Component {
       .then((response) => {
           //handle success
           console.log("Uploaded");
-          console.log(response.data.results.URL);
+          console.log(response);
 
           this.setState({ albums: response.data.results.URL});
 
@@ -38,10 +37,23 @@ class AlbumList extends Component {
           {
               var identifier = response.data.results.URL[i].key.split('.');
               var url = 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/get-single-image-stats/' + identifier[0];
-              console.log(url);
               axios.get(url)
-              .then(function (response) {
-                console.log(response);
+              .then((response) =>{
+                var labels = JSON.stringify(response.data);
+
+                 var splitter = response.config.url.split('/');
+                 var imagekey = splitter[5];
+                // console.log(imagekey);
+
+                 for (var i = 0; i < this.state.albums.length; i++)
+                 {
+                   if (this.state.albums[i].key.includes(imagekey)){
+                      // console.log(this.state.albums[i]);
+                       this.state.albums[i].tags = labels;
+                       this.forceUpdate();
+                   }
+                 }
+
               })
               .catch(function (error) {
                 console.log(error);
@@ -74,9 +86,6 @@ class AlbumList extends Component {
     bodyFormData.append('key', likeKey);
     bodyFormData.append('username', user);
     bodyFormData.append('like', true);
-
-    console.log(user);
-
     axios({
         method: 'post',
         url: 'https://kwvx92a9o2.execute-api.us-east-2.amazonaws.com/dev/sub/likes/insert',
@@ -113,7 +122,6 @@ class AlbumList extends Component {
 
     _onRefresh() {
         this.setState({refreshing: true});
-        console.log("hey");
         this._bootstrapAsync();
         this.setState({refreshing: false});
       }
