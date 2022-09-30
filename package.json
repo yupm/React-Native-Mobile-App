@@ -14,7 +14,7 @@
     "react-native-image-picker": "^0.26.10",
     "react-native-svg": "^6.3.1",
     "react-navigation": "^2.0.1",
-    "victory-native": "^0.17.4"
+    "victory-native": "^36.6.8"
   },
   "devDependencies": {
     "@expo/vector-icons": "^6.3.1",
